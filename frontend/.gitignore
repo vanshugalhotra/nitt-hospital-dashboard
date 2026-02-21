@@ -2,6 +2,8 @@
 # Only ignore the node_modules at the root level
 /node_modules/
 /jspm_packages/
+/.next/
+next-env.d.ts/
 
 # --- Environment / Secrets ---
 # Using the wildcard ensures anything starting with .env is blocked

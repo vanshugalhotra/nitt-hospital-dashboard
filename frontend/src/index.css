@@ -44,10 +44,13 @@
 
     --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 210 40% 90%;
+    --sidebar-logout-foreground: 0 80% 60%;
     --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 47% 16%;
+    --sidebar-logout-accent: 0 47% 16%;
     --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-logout-accent-foreground: 0 80% 80%;
     --sidebar-border: 222 47% 18%;
     --sidebar-ring: 217 91% 60%;
     --sidebar-muted: 222 47% 20%;
@@ -140,6 +143,13 @@
   }
 
   .modal-overlay {
-    @apply fixed inset-0 bg-foreground/40 backdrop-blur-sm z-50 flex items-center justify-center;
-  }
+  @apply fixed z-[9999] flex items-center justify-center;
+  /* Use viewport units to bypass parent constraints */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: hsl(var(--foreground) / 0.4);
+  backdrop-filter: blur(4px);
+}
 }

@@ -49,12 +49,9 @@ const DashboardLayout = ({
           "flex items-center gap-3 px-4 h-16 border-b border-sidebar-border",
           !sidebarOpen && "lg:justify-center"
         )}>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary">
-            <span className="text-sm font-bold text-sidebar-primary-foreground">HC</span>
-          </div>
           {sidebarOpen && (
             <span className="font-display text-sm font-bold text-sidebar-foreground truncate">
-              Health Center
+              NIT Trichy Hospital
             </span>
           )}
           <button
@@ -94,7 +91,7 @@ const DashboardLayout = ({
           <button
             onClick={() => navigate("/login")}
             className={cn(
-              "flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+              "flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-logout-foreground hover:bg-sidebar-logout-accent hover:text-sidebar-logout-accent-foreground transition-colors",
               !sidebarOpen && "lg:justify-center lg:px-0"
             )}
           >
@@ -125,15 +122,10 @@ const DashboardLayout = ({
 
           <div className="flex-1" />
 
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" />
-          </Button>
-
           <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-semibold text-foreground">{userName}</p>
+            <div className="text-right flex items-center gap-2">
               <span className={roleBadgeClass}>{role}</span>
+              <p className="text-sm font-semibold text-foreground">{userName}</p>
             </div>
             <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
               {userAvatar ? (

@@ -14,8 +14,8 @@ const StudentDashboard = () => (
   <DashboardLayout sidebarItems={sidebarItems} role="Student" roleBadgeClass="badge-student" userName="Rahul Kumar">
     <div className="space-y-6">
       <div>
-        <h1 className="page-header">Welcome back, Rahul! 👋</h1>
-        <p className="text-muted-foreground mt-1">Here's a quick overview of your health center activity.</p>
+        <h1 className="page-header">Welcome back, Rahul!</h1>
+        <p className="text-muted-foreground mt-1">Here's a quick overview of your nitt hospital activity.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

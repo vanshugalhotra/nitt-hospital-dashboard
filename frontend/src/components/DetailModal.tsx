@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom"; // 1. Import this
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -11,10 +12,11 @@ interface DetailModalProps {
 const DetailModal = ({ open, onClose, title, children }: DetailModalProps) => {
   if (!open) return null;
 
-  return (
+  // 2. Wrap the return in createPortal
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="bg-card rounded-xl shadow-xl border border-border w-full max-w-lg mx-4 max-h-[85vh] overflow-y-auto animate-fade-in"
+        className="bg-card rounded-xl shadow-xl border border-border w-full max-w-lg mx-4 max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-5 border-b border-border">
@@ -25,7 +27,8 @@ const DetailModal = ({ open, onClose, title, children }: DetailModalProps) => {
         </div>
         <div className="p-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body // 3. This tells React to render it at the root of the body
   );
 };
 

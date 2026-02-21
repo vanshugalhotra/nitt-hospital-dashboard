@@ -1,0 +1,296 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//
+// ENUMS
+//
+
+enum StaffRole {
+  ADMIN
+  DOCTOR
+  PHARMACY
+  LAB
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum PatientType {
+  STUDENT
+  FACULTY
+  OTHER
+}
+
+enum PrescriptionStatus {
+  ACTIVE
+  PENDING
+  COMPLETED
+}
+
+enum StockTransactionType {
+  IN
+  OUT
+  MANUAL_ADJUSTMENT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum AuditEntity {
+  PATIENT
+  STAFF_USER
+  PRESCRIPTION
+  MEDICINE
+  LAB_TEST
+  STOCK
+}
+
+//
+// PATIENT
+//
+
+model Patient {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String   // hashed password
+  identifier    String   @unique   // roll no / staff no / other id
+  type          PatientType
+  gender        Gender
+  department    String?
+  address       String?
+  profileImage  String?
+  createdAt     DateTime @default(now())
+
+  prescriptions Prescription[]
+}
+
+//
+// STAFF USERS
+//
+
+model StaffUser {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  password     String
+  role         StaffRole
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  doctorProfile DoctorProfile?
+
+  prescriptionsAsDoctor Prescription[] @relation("DoctorPrescriptions")
+  uploadedReports       LabReport[]
+  dispensedRecords      DispenseRecord[]
+  stockTransactions     StockTransaction[]
+
+  auditLogs             AuditLog[] @relation("AuditActor")
+}
+
+//
+// DOCTOR PROFILE
+//
+
+model DoctorProfile {
+  id               String   @id @default(uuid())
+  staffUserId      String   @unique
+  photo            String?
+  qualification    String
+  experienceYears  Int
+  specialization   String
+  availabilityDays String?
+
+  staffUser StaffUser @relation(fields: [staffUserId], references: [id])
+}
+
+//
+// PRESCRIPTIONS
+//
+
+model Prescription {
+  id            String   @id @default(uuid())
+  patientId     String
+  doctorId      String
+  notes         String?
+  nextVisitDate DateTime?
+  status        PrescriptionStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+
+  patient Patient   @relation(fields: [patientId], references: [id])
+  doctor  StaffUser @relation("DoctorPrescriptions", fields: [doctorId], references: [id])
+
+  medicines PrescriptionMedicine[]
+  labTests  PrescriptionLabTest[]
+}
+
+//
+// MEDICINE MASTER
+//
+
+model Medicine {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  unitType    String
+
+  stock          MedicineStock?
+  prescriptions  PrescriptionMedicine[]
+  transactions   StockTransaction[]
+}
+
+//
+// PRESCRIPTION MEDICINES
+//
+
+model PrescriptionMedicine {
+  id               String @id @default(uuid())
+  prescriptionId   String
+  medicineId       String
+  dosage           String
+  quantity         Int
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id])
+  medicine     Medicine     @relation(fields: [medicineId], references: [id])
+
+  dispenseRecords DispenseRecord[]
+}
+
+//
+// LAB TEST MASTER
+//
+
+model LabTest {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+
+  prescriptions PrescriptionLabTest[]
+}
+
+//
+// PRESCRIBED LAB TESTS
+//
+
+model PrescriptionLabTest {
+  id             String @id @default(uuid())
+  prescriptionId String
+  labTestId      String
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id])
+  labTest      LabTest      @relation(fields: [labTestId], references: [id])
+
+  report LabReport?
+}
+
+//
+// LAB REPORTS
+//
+
+model LabReport {
+  id                    String   @id @default(uuid())
+  prescriptionLabTestId String   @unique
+  uploadedById          String
+  pdfUrl                String
+  uploadedAt            DateTime @default(now())
+
+  prescriptionLabTest PrescriptionLabTest @relation(fields: [prescriptionLabTestId], references: [id])
+  uploadedBy          StaffUser           @relation(fields: [uploadedById], references: [id])
+}
+
+//
+// MEDICINE STOCK
+//
+
+model MedicineStock {
+  id            String   @id @default(uuid())
+  medicineId    String   @unique
+  quantity      Int
+  lastUpdatedAt DateTime @updatedAt
+
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+}
+
+//
+// DISPENSE RECORDS
+//
+
+model DispenseRecord {
+  id                     String   @id @default(uuid())
+  prescriptionMedicineId String
+  dispensedById          String
+  quantity               Int
+  dispensedAt            DateTime @default(now())
+
+  prescriptionMedicine PrescriptionMedicine @relation(fields: [prescriptionMedicineId], references: [id])
+  dispensedBy          StaffUser            @relation(fields: [dispensedById], references: [id])
+}
+
+//
+// STOCK TRANSACTIONS
+//
+
+model StockTransaction {
+  id            String   @id @default(uuid())
+  medicineId    String
+  type          StockTransactionType
+  quantity      Int
+  performedById String
+  createdAt     DateTime @default(now())
+
+  medicine    Medicine  @relation(fields: [medicineId], references: [id])
+  performedBy StaffUser @relation(fields: [performedById], references: [id])
+}
+
+//
+// GENERIC AUDIT LOG
+//
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  entityType  AuditEntity
+  entityId    String
+  action      AuditAction
+  actorId     String?
+  summary     String?
+  context     Json?
+  createdAt   DateTime    @default(now())
+
+  actor StaffUser? @relation("AuditActor", fields: [actorId], references: [id])
+}
+
+//
+// EMAIL OTP
+//
+
+model EmailOTP {
+  id        String   @id @default(uuid())
+  email     String
+  otpCode   String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+}
+
+//
+// VISITING DOCTORS
+//
+
+model VisitingDoctor {
+  id             String @id @default(uuid())
+  name           String
+  specialization String
+  availableDays  String
+  notes          String?
+}

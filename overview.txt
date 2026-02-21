@@ -1,0 +1,340 @@
+Overview:-
+
+Entity that we will need to provide for now are:-
+1. Student Dashboard Page(Register Setup(Name, RollNo.,Image,WebmailID,Department,Hostel,Room No.,(Verified by otp on webmailID)))
+                    (LogIN Page(by rollno. or webmail id otp will go then verify))
+                    (Student should be able to see his basic Profile.)
+                    (Student should be able to his past prescription details)
+                    (Student should be able to see basic details of some special doctors that on which day they are available(Static Only))
+                    Student will get the Lab Test report in pdf format on their webmail.
+
+2.Admin Dashboard Page(login via presettled id and pass)
+(Admin will be responsible to create id of Doctors,Pharmacy Person,Lab Person  and will provide them with their id and pass)
+(Some basic details of doctor hw will enter while registering i.e. name, photo, email,degree,expierience,speciality)
+(Admin can remove a particular doctor or labperson or whomsoever it might be.)
+
+
+3. Doctor Dashboard Page(Login via id and pass provided by Admin)
+(Doctor can see his profile,can enter student rollno to check basic information which we have already got from student.)
+(Doctor will be provided with the list of medicines and list of lab tests available in hospital.Doctor can select the medicines from dropdown menu and there should be a search button for medicines also.)
+(In the prescription 1.Prescribed medicines list  2. Prescribed lab tests  3. some general textarea must be there. that he will submit and it will go to concerned people.)
+(Doctor's should be able to see patient past prescriptions also.)
+
+
+4. Pharmacy Dashboard Page(Login via id and pass provided by Admin)
+(Pharmacy can view their stock details.)
+(Pharmacy can add new stock by uploading a csv file in a pre-defined format)
+(Pharmacy will be able to see the remaining prescription at the moment and they can search by roll no of student and give the prescribed medicine to them and mark it as dispensed and that medicine will be deducted from stock.)
+(If pharmacy is giving medicine by money then they can manually reduce the stock.)
+
+
+5. Lab TEst Dashboard Page(Login via id and pass provided by Admin)
+(He can see the test prescribed to a patient at a moment.)
+(He can do the test and send the report via email on student webmail in pdf format)
+
+-------------------------------------------------------------------------------------------------------------------
+# Student Health Center Management System
+
+## Project Description
+
+The **Student Health Center Management System** is a role-based web application designed to digitize and streamline the medical services provided within a college or university campus.
+
+The system enables students, doctors, pharmacy staff, laboratory staff, and administrators to efficiently manage medical consultations, prescriptions, lab tests, and medication distribution through dedicated dashboards.
+
+The primary goal of this system is to **reduce manual paperwork, improve transparency, ensure real-time tracking of medical records, and provide secure access to health services for students.**
+
+---
+
+# Core Objectives
+
+* Provide a centralized digital platform for campus medical operations.
+* Maintain secure and structured student medical records.
+* Automate prescription handling, lab testing workflows, and pharmacy stock management.
+* Ensure role-based access and data privacy.
+* Improve communication between students, doctors, pharmacy, and lab staff.
+
+---
+
+# System Users & Roles
+
+The system consists of **five main user roles**:
+
+1. Student
+2. Administrator
+3. Doctor
+4. Pharmacy Staff
+5. Lab Staff
+
+Each role has its own dashboard and permissions.
+
+---
+
+# 1. Student Dashboard
+
+## Authentication & Registration
+
+Students can:
+
+* Register using:
+
+  * Name
+  * Roll Number (unique)
+  * Profile Image
+  * Webmail ID (college email)
+  * Department
+  * Hostel Name
+  * Room Number
+
+* **Email Verification via OTP**:
+
+  * OTP is sent to the student's official webmail ID.
+  * Account is activated only after OTP verification.
+
+* Login using:
+
+  * Roll Number OR Webmail ID
+  * OTP-based authentication
+
+---
+
+## Student Features
+
+Students can:
+
+### Profile Management
+
+* View basic profile details.
+* Update allowed fields (photo, room number, etc.).
+
+### Prescription Records
+
+* View complete history of prescriptions.
+* See:
+
+  * Medicines prescribed
+  * Lab tests prescribed
+  * Doctor notes
+  * Date & status
+
+### Lab Reports
+
+* Receive lab test reports in **PDF format** via email.
+* Download reports from dashboard.
+
+### Doctor Availability Info (Static Data)
+
+* View list of special visiting doctors.
+* See:
+
+  * Speciality
+  * Available days
+  * Basic profile info
+
+---
+
+# 2. Admin Dashboard
+
+## Authentication
+
+* Login using preset admin credentials.
+
+---
+
+## Admin Responsibilities
+
+### User Management
+
+Admin can:
+
+* Create accounts for:
+
+  * Doctors
+  * Pharmacy Staff
+  * Lab Staff
+
+* Assign:
+
+  * Unique ID
+  * Password
+  * Role permissions
+
+* Remove or deactivate users.
+
+---
+
+### Doctor Profile Management
+
+Admin registers doctor details:
+
+* Name
+* Photo
+* Email
+* Qualification
+* Experience
+* Specialization
+
+---
+
+### Master Data Management
+
+Admin maintains:
+
+* Medicine master list
+* Lab test master list
+* Doctor availability schedule
+
+---
+
+# 3. Doctor Dashboard
+
+## Authentication
+
+* Login using ID & password provided by Admin.
+
+---
+
+## Doctor Features
+
+### Profile Access
+
+* View personal details and specialization.
+
+---
+
+### Patient Lookup
+
+Doctor can:
+
+* Search student using roll number.
+* View:
+
+  * Basic student profile
+  * Past prescription history
+  * Previous lab reports
+
+---
+
+### Prescription Management
+
+Doctor can create prescriptions including:
+
+Prescribed Medicines
+
+* Select from dropdown list.
+* Search medicines by name.
+
+Prescribed Lab Tests
+
+* Select from predefined lab test list.
+
+Doctor Notes
+
+* Free text area for additional instructions.
+
+---
+
+### Prescription Workflow
+
+Once submitted:
+
+* Prescription becomes visible to:
+
+  * Pharmacy Staff (for medicines)
+  * Lab Staff (for tests)
+  * Student (for records)
+
+---
+
+# 4. Pharmacy Dashboard
+
+## Authentication
+
+* Login via credentials provided by Admin.
+
+---
+
+## Pharmacy Features
+
+### Stock Management
+
+Pharmacy can:
+
+* View current stock levels.
+* Upload new stock via CSV file (predefined format).
+* Manually adjust stock.
+
+---
+
+### Prescription Processing
+
+Pharmacy can:
+
+* View pending prescriptions.
+* Search by student roll number.
+* Dispense medicines.
+
+Once dispensed:
+
+* Stock is automatically deducted.
+* Prescription status is updated.
+
+---
+
+### Manual Sales Entry
+
+If medicine is sold outside prescriptions:
+
+* Pharmacy staff can manually deduct stock.
+
+---
+
+# 5. Lab Test Dashboard
+
+## Authentication
+
+* Login via Admin-provided credentials.
+
+---
+
+## Lab Features
+
+### Test Management
+
+Lab staff can:
+
+* View list of prescribed tests.
+* Search student via roll number.
+
+---
+
+### Report Upload & Delivery
+
+After performing tests:
+
+* Upload report (PDF format).
+* System automatically sends report to:
+
+  * Student webmail
+  * Student dashboard
+
+---
+
+# Security & Data Integrity
+
+* Role-based access control (RBAC)
+* OTP-based student authentication
+* Secure password storage
+* Data encryption for sensitive records
+* Audit logs for critical actions
+
+---
+
+# Key System Modules
+
+1. Authentication & User Management
+2. Student Profile Management
+3. Prescription Management
+4. Pharmacy Inventory System
+5. Lab Test Workflow
+6. Email & Notification System
+7. Admin Master Data Control

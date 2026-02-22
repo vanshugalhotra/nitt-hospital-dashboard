@@ -88,10 +88,6 @@ const Register = () => {
       toast({ variant: "destructive", title: "Name Error", description: "Please enter a valid name." });
       return;
     }
-    if (form.rollNumber.length !== 9) {
-      toast({ variant: "destructive", title: "Roll Number Error", description: "Roll number must be exactly 9 digits." });
-      return;
-    }
     if (!form.gender || !form.department || !form.hostel || !form.roomNumber) {
       toast({ variant: "destructive", title: "Missing Fields", description: "Please fill in all details including Gender." });
       return;

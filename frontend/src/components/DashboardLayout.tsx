@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { 
-  Menu, X, LogOut, ChevronLeft, Bell
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Menu, X, LogOut, ChevronLeft } from "lucide-react";
 
 export interface SidebarItem {
   label: string;
@@ -29,7 +27,13 @@ const DashboardLayout = ({
   userName,
   userAvatar,
 }: DashboardLayoutProps) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return false;
+  });
+  const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -40,30 +44,35 @@ const DashboardLayout = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col bg-sidebar transition-all duration-300 lg:relative",
-          sidebarOpen ? "w-64" : "w-0 lg:w-16"
+          "fixed inset-y-0 left-0 z-50 flex flex-col bg-sidebar transition-all duration-300 lg:relative",
+          sidebarOpen 
+            ? "w-64 translate-x-0" 
+            : "-translate-x-full lg:translate-x-0 lg:w-16"
         )}
       >
-        {/* Logo */}
+        {/* Title Section */}
         <div className={cn(
-          "flex items-center gap-3 px-4 h-16 border-b border-sidebar-border",
-          !sidebarOpen && "lg:justify-center"
+          "flex items-center h-16 border-b border-sidebar-border px-4",
+          !sidebarOpen && "lg:justify-center lg:px-0"
         )}>
-          {sidebarOpen && (
-            <span className="font-display text-sm font-bold text-sidebar-foreground truncate">
-              NIT Trichy Hospital
-            </span>
-          )}
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="ml-auto text-sidebar-foreground/60 hover:text-sidebar-foreground lg:hidden"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {
+          sidebarOpen &&
+            <div className="flex items-center gap-2">
+              <span className="font-display text-sm font-bold text-sidebar-foreground truncate">
+                NIT Trichy Hospital
+              </span>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="text-sidebar-foreground/60 hover:text-sidebar-foreground lg:hidden"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            }
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -71,6 +80,10 @@ const DashboardLayout = ({
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => {
+                   // Close sidebar on mobile after navigation
+                   if (window.innerWidth < 1024) setSidebarOpen(false);
+                }}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   active
@@ -86,48 +99,63 @@ const DashboardLayout = ({
           })}
         </nav>
 
-        {/* Logout */}
-        <div className="p-2 border-t border-sidebar-border">
+        {/* Logout Section - Fixed the sticking out issue */}
+        <div className="p-2 border-t border-sidebar-border overflow-hidden">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => {
+              navigate("/login");
+              toast({
+                  title: "Logout Successful",
+                  description: `You have been logged out of the ${role} portal.`,
+                });
+              }}
             className={cn(
               "flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-logout-foreground hover:bg-sidebar-logout-accent hover:text-sidebar-logout-accent-foreground transition-colors",
               !sidebarOpen && "lg:justify-center lg:px-0"
             )}
           >
             <LogOut className="h-5 w-5 shrink-0" />
-            {sidebarOpen && <span>Logout</span>}
+            {sidebarOpen && <span className="truncate">Logout</span>}
           </button>
         </div>
       </aside>
 
-      {/* Mobile overlay */}
+      {/* Mobile overlay - Only shows when sidebar is open on small screens */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-foreground/20 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         {/* Top navbar */}
         <header className="flex h-16 items-center gap-4 border-b border-border bg-card px-4 lg:px-6">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-muted-foreground hover:text-foreground"
+            className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Toggle Sidebar"
           >
-            {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {/* Logic: On mobile, always show Menu if closed. On desktop, show Chevron toggle. */}
+            <div className="lg:block hidden">
+              {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </div>
+            <div className="lg:hidden block">
+              <Menu className="h-5 w-5" />
+            </div>
           </button>
 
           <div className="flex-1" />
 
           <div className="flex items-center gap-3">
-            <div className="text-right flex items-center gap-2">
-              <span className={roleBadgeClass}>{role}</span>
-              <p className="text-sm font-semibold text-foreground">{userName}</p>
+            <div className="text-right hidden sm:flex items-center gap-2">
+              <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", roleBadgeClass)}>
+                {role}
+              </span>
+              <p className="text-sm font-semibold text-foreground whitespace-nowrap">{userName}</p>
             </div>
-            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border">
               {userAvatar ? (
                 <img src={userAvatar} alt={userName} className="h-full w-full object-cover" />
               ) : (
@@ -140,8 +168,8 @@ const DashboardLayout = ({
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="animate-fade-in">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-background/50">
+          <div className="mx-auto max-w-7xl animate-fade-in">
             {children}
           </div>
         </main>

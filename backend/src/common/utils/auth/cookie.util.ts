@@ -8,6 +8,7 @@ interface BaseCookieOptions {
   secure: boolean;
   sameSite: SameSite;
   path: string;
+  maxAge?: number;
 }
 
 const getBaseOptions = (config: ConfigService): BaseCookieOptions => {
@@ -29,26 +30,11 @@ export const getAccessCookieOptions = (config: ConfigService) => {
   };
 };
 
-export const getRefreshCookieOptions = (config: ConfigService) => {
+export const clearAuthCookie = (res: Response, config: ConfigService) => {
   const base = getBaseOptions(config);
-  const expires = config.get('JWT_REFRESH_EXPIRES_IN');
-
-  return {
-    ...base,
-    maxAge: parseExpiresToMs(expires),
-  };
+  res.clearCookie(config.get('AUTH_COOKIE_NAME'), base);
 };
 
-export const clearAuthCookies = (res: Response, config: ConfigService) => {
-  const base = getBaseOptions(config);
-
-  res.clearCookie('access_token', base);
-  res.clearCookie('refresh_token', base);
-};
-
-/**
- * Convert "7d", "12h", "30m", "15s" → milliseconds
- */
 const parseExpiresToMs = (val: string): number => {
   if (!val) return 0;
 

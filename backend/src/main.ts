@@ -7,6 +7,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { LoggerService } from './logger/logger.service';
 import helmet from 'helmet';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,10 +21,9 @@ async function bootstrap() {
   const port = configService.get('PORT');
   const nodeEnv = configService.get('NODE_ENV');
 
-  const allowedOrigins = configService
-    .get('ALLOWED_ORIGINS')
-    .split(',')
-    .map((origin) => origin.trim());
+  // Body limit
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   app.setGlobalPrefix('api');
 
@@ -31,12 +32,36 @@ async function bootstrap() {
   });
 
   app.use(helmet());
+  app.use(cookieParser());
+
+  // ----------------------
+  // CORS
+  // ----------------------
+  const allowedOrigins =
+    configService
+      .get('ALLOWED_ORIGINS')
+      ?.split(',')
+      .map((o) => o.trim()) || [];
 
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // Logic: Allow if no origin (local/server) or if it's in our white-list
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        // Logging the origin as a string safely
+        console.warn(
+          `CORS blocked for origin: ${String(origin)}. Update ALLOWED_ORIGINS in .env`,
+        );
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -13,9 +13,7 @@ export interface AppConfig {
   ALLOWED_ORIGINS: string;
 
   JWT_ACCESS_SECRET: string;
-  JWT_REFRESH_SECRET: string;
   JWT_ACCESS_EXPIRES_IN: StringValue;
-  JWT_REFRESH_EXPIRES_IN: StringValue;
 
   AUTH_COOKIE_NAME: string;
   AUTH_COOKIE_SECURE: boolean;
@@ -51,9 +49,7 @@ export class ConfigService {
       ALLOWED_ORIGINS: Joi.string().required(),
 
       JWT_ACCESS_SECRET: Joi.string().required(),
-      JWT_REFRESH_SECRET: Joi.string().required(),
       JWT_ACCESS_EXPIRES_IN: Joi.string().required(),
-      JWT_REFRESH_EXPIRES_IN: Joi.string().required(),
 
       AUTH_COOKIE_NAME: Joi.string().required(),
       AUTH_COOKIE_SECURE: Joi.boolean().default(false),

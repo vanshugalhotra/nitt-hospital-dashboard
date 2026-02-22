@@ -12,6 +12,7 @@ datasource db {
 
 enum StaffRole {
   ADMIN
+  HOSPITAL_ADMIN
   DOCTOR
   PHARMACY
   LAB

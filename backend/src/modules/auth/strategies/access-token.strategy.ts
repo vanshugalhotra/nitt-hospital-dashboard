@@ -9,6 +9,12 @@ interface Cookies {
   [key: string]: string;
 }
 
+export interface AuthenticatedUser {
+  id: string;
+  email: string;
+  role: string;
+}
+
 const cookieExtractor = (config: ConfigService) => {
   return (req: Request): string | null => {
     if (req?.cookies) {
@@ -31,13 +37,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-access') {
     });
   }
 
-  validate(payload: AuthJwtPayload): {
-    userId: string;
-    email: string;
-    role: string;
-  } {
+  validate(payload: AuthJwtPayload): AuthenticatedUser {
     return {
-      userId: payload.sub,
+      id: payload.sub,
       email: payload.email,
       role: payload.role,
     };

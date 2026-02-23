@@ -9,7 +9,14 @@ import {
   Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiParam,
+  ApiBody,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -29,9 +36,10 @@ export class StaffController {
   // ────────────────────────────────────────────────
   @Post()
   @ApiOperation({ summary: 'Create new staff user' })
+  @ApiBody({ type: CreateStaffDto })
   @ApiResponse({
     status: 201,
-    description: 'Staff created successfully',
+    type: StaffResponseDto,
   })
   @ApiResponse({
     status: 409,
@@ -46,9 +54,10 @@ export class StaffController {
   // ────────────────────────────────────────────────
   @Get()
   @ApiOperation({ summary: 'Get paginated list of staff users' })
+  @ApiQuery({ type: QueryOptionsDto })
   @ApiResponse({
     status: 200,
-    description: 'Staff list fetched successfully',
+    description: 'Paginated list of staff users',
   })
   async findAll(
     @Query() query: QueryOptionsDto,
@@ -64,7 +73,7 @@ export class StaffController {
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({
     status: 200,
-    description: 'Staff fetched successfully',
+    type: StaffResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -82,9 +91,11 @@ export class StaffController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update staff user' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
+  @ApiBody({ type: UpdateStaffDto })
   @ApiResponse({
     status: 200,
     description: 'Staff updated successfully',
+    type: StaffResponseDto,
   })
   @ApiResponse({
     status: 404,

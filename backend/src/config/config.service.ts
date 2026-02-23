@@ -22,6 +22,10 @@ export interface AppConfig {
   AUTH_ADMIN_SECRET: string;
 
   LOG_LEVEL: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+
+  SUPER_ADMIN_EMAIL: string;
+  SUPER_ADMIN_PASSWORD: string;
+  SUPER_ADMIN_NAME: string;
 }
 
 @Injectable()
@@ -60,6 +64,10 @@ export class ConfigService {
       LOG_LEVEL: Joi.string()
         .valid('fatal', 'error', 'warn', 'info', 'debug', 'trace')
         .default('debug'),
+
+      SUPER_ADMIN_EMAIL: Joi.string().email().required(),
+      SUPER_ADMIN_NAME: Joi.string().required(),
+      SUPER_ADMIN_PASSWORD: Joi.string().min(8).required(),
     }).unknown(true);
 
     const validationResult = schema.validate(process.env, {

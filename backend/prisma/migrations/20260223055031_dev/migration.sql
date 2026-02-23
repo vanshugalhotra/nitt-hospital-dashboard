@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "StaffRole" AS ENUM ('ADMIN', 'DOCTOR', 'PHARMACY', 'LAB');
+CREATE TYPE "StaffRole" AS ENUM ('ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'PHARMACY', 'LAB');
 
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHER');
@@ -32,6 +32,7 @@ CREATE TABLE "Patient" (
     "address" TEXT,
     "profileImage" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Patient_pkey" PRIMARY KEY ("id")
 );
@@ -45,6 +46,7 @@ CREATE TABLE "StaffUser" (
     "role" "StaffRole" NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "StaffUser_pkey" PRIMARY KEY ("id")
 );
@@ -130,7 +132,7 @@ CREATE TABLE "MedicineStock" (
     "id" TEXT NOT NULL,
     "medicineId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "lastUpdatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "MedicineStock_pkey" PRIMARY KEY ("id")
 );

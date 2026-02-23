@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Loader2, Users, Stethoscope, Pill, FlaskConical, UserRoundCog } from "lucide-react";
 import { useToast } from "@/hooks/use-toast"; 
+import axiosInstance from "@/lib/axios";
 import medicalIllustration from "@/assets/medical-illustration.png";
 
 const Login = () => {

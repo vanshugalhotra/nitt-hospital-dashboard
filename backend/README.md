@@ -23,24 +23,7 @@ NestJS backend for hospital management system with Prisma ORM and PostgreSQL.
 
 3. **Configure environment variables**
 
-   Create a `.env` file in the `backend` directory with the following configuration:
-
-   ```env
-   # Database Configuration
-   DATABASE_URL=postgresql://<user>:<password>@localhost:5432/hospital_management?schema=public
-
-   # Server Configuration
-   PORT=3000
-   NODE_ENV=development
-   FRONTEND_URL=http://localhost:3000
-   ALLOWED_ORIGINS=http://localhost:3000
-
-   JWT_SECRET=jwtsecretkey
-   JWT_EXPIRES_IN=8h
-
-   # Logging
-   LOG_LEVEL=info
-   ```
+   Create a `.env` file in the `backend` directory
 
    > **Note:** Replace `<user>` and `<password>` with your PostgreSQL credentials.
 
@@ -54,7 +37,7 @@ NestJS backend for hospital management system with Prisma ORM and PostgreSQL.
 
 2. **Run Database Migrations**
    ```bash
-   npx prisma migrate dev
+   npx prisma migrate deploy
    ```
    This applies all pending migrations to your database.
 

@@ -11,12 +11,12 @@ import {
 import { StaffRole } from '@prisma/client';
 
 export class CreateStaffDto {
-  @ApiProperty({ example: 'Dr. John Doe' })
+  @ApiProperty({ example: 'Dr. Ustaad JI' })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'doctor@shc.com' })
+  @ApiProperty({ example: 'doctor@nitt.edu' })
   @IsEmail()
   email: string;
 

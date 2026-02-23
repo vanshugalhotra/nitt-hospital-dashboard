@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/DashboardLayout";
-import { LayoutDashboard, User, FileText, FlaskConical, Stethoscope, Calendar } from "lucide-react";
+import { LayoutDashboard, User, FileText, FlaskConical, Stethoscope, Calendar, Clock } from "lucide-react";
 
 const sidebarItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/student" },
@@ -10,12 +10,60 @@ const sidebarItems = [
 ];
 
 const doctors = [
-  { name: "Dr. Anita Desai", specialization: "Dermatologist", qualification: "MD Dermatology", experience: "12 years", days: "Mon, Wed, Fri", photo: "AD" },
-  { name: "Dr. Rajesh Gupta", specialization: "Orthopedic", qualification: "MS Orthopedics", experience: "15 years", days: "Tue, Thu", photo: "RG" },
-  { name: "Dr. Meera Joshi", specialization: "Psychiatrist", qualification: "MD Psychiatry", experience: "8 years", days: "Mon, Thu, Sat", photo: "MJ" },
-  { name: "Dr. Vikram Rao", specialization: "Ophthalmologist", qualification: "MS Ophthalmology", experience: "10 years", days: "Wed, Fri", photo: "VR" },
-  { name: "Dr. Priya Nair", specialization: "Gynecologist", qualification: "MD Gynecology", experience: "14 years", days: "Tue, Sat", photo: "PN" },
-  { name: "Dr. Amit Verma", specialization: "ENT Specialist", qualification: "MS ENT", experience: "9 years", days: "Mon, Wed", photo: "AV" },
+  { 
+    name: "Dr. Anita Desai", 
+    specialization: "Dermatologist", 
+    qualification: "MD Dermatology", 
+    experience: "12 years", 
+    days: "Mon, Wed, Fri", 
+    timings: "10:00 AM - 01:00 PM",
+    photo: "AD" 
+  },
+  { 
+    name: "Dr. Rajesh Gupta", 
+    specialization: "Orthopedic", 
+    qualification: "MS Orthopedics", 
+    experience: "15 years", 
+    days: "Tue, Thu", 
+    timings: "02:00 PM - 05:00 PM",
+    photo: "RG" 
+  },
+  { 
+    name: "Dr. Meera Joshi", 
+    specialization: "Psychiatrist", 
+    qualification: "MD Psychiatry", 
+    experience: "8 years", 
+    days: "Mon, Thu, Sat", 
+    timings: "09:00 AM - 12:00 PM",
+    photo: "MJ" 
+  },
+  { 
+    name: "Dr. Vikram Rao", 
+    specialization: "Ophthalmologist", 
+    qualification: "MS Ophthalmology", 
+    experience: "10 years", 
+    days: "Wed, Fri", 
+    timings: "11:00 AM - 03:00 PM",
+    photo: "VR" 
+  },
+  { 
+    name: "Dr. Priya Nair", 
+    specialization: "Gynecologist", 
+    qualification: "MD Gynecology", 
+    experience: "14 years", 
+    days: "Tue, Sat", 
+    timings: "04:00 PM - 07:00 PM",
+    photo: "PN" 
+  },
+  { 
+    name: "Dr. Amit Verma", 
+    specialization: "ENT Specialist", 
+    qualification: "MS ENT", 
+    experience: "9 years", 
+    days: "Mon, Wed", 
+    timings: "10:00 AM - 02:00 PM",
+    photo: "AV" 
+  },
 ];
 
 const SpecialDoctors = () => (
@@ -36,6 +84,7 @@ const SpecialDoctors = () => (
                 <p className="text-sm text-primary font-medium">{doc.specialization}</p>
               </div>
             </div>
+            
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Qualification</span>
@@ -45,9 +94,16 @@ const SpecialDoctors = () => (
                 <span className="text-muted-foreground">Experience</span>
                 <span className="font-medium text-foreground">{doc.experience}</span>
               </div>
-              <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">{doc.days}</span>
+              
+              <div className="mt-3 pt-3 border-t border-border space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">{doc.days}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">{doc.timings}</span>
+                </div>
               </div>
             </div>
           </div>

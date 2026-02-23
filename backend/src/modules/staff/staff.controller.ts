@@ -8,8 +8,16 @@ import {
   Param,
   Query,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiParam,
+  ApiBody,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -18,8 +26,13 @@ import {
   StaffResponseDto,
 } from './dto/staff-response.dto';
 import { QueryOptionsDto } from 'src/common/dto/query-options.dto';
+import { JwtAuthGuard } from '../auth/gaurds/jwt-auth.gaurd';
+import { PermissionsGuard } from '../auth/gaurds/permission.gaurd';
+import { Permission } from '../auth/decorators/permission.decorator';
+import { PERMISSIONS } from '../auth/rbac/role-permissions.map';
 
 @ApiTags('Staff')
+@UseGuards(JwtAuthGuard)
 @Controller({ path: 'staff', version: '1' })
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
@@ -28,10 +41,13 @@ export class StaffController {
   // CREATE STAFF
   // ────────────────────────────────────────────────
   @Post()
+  @UseGuards(PermissionsGuard)
+  @Permission(PERMISSIONS.STAFF_CREATE)
   @ApiOperation({ summary: 'Create new staff user' })
+  @ApiBody({ type: CreateStaffDto })
   @ApiResponse({
     status: 201,
-    description: 'Staff created successfully',
+    type: StaffResponseDto,
   })
   @ApiResponse({
     status: 409,
@@ -45,10 +61,13 @@ export class StaffController {
   // GET ALL STAFF
   // ────────────────────────────────────────────────
   @Get()
+  @UseGuards(PermissionsGuard)
+  @Permission(PERMISSIONS.STAFF_READ)
   @ApiOperation({ summary: 'Get paginated list of staff users' })
+  @ApiQuery({ type: QueryOptionsDto })
   @ApiResponse({
     status: 200,
-    description: 'Staff list fetched successfully',
+    description: 'Paginated list of staff users',
   })
   async findAll(
     @Query() query: QueryOptionsDto,
@@ -60,11 +79,13 @@ export class StaffController {
   // GET ONE STAFF
   // ────────────────────────────────────────────────
   @Get(':id')
+  @UseGuards(PermissionsGuard)
+  @Permission(PERMISSIONS.STAFF_READ)
   @ApiOperation({ summary: 'Get staff by ID' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({
     status: 200,
-    description: 'Staff fetched successfully',
+    type: StaffResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -80,11 +101,15 @@ export class StaffController {
   // UPDATE STAFF
   // ────────────────────────────────────────────────
   @Patch(':id')
+  @UseGuards(PermissionsGuard)
+  @Permission(PERMISSIONS.STAFF_UPDATE)
   @ApiOperation({ summary: 'Update staff user' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
+  @ApiBody({ type: UpdateStaffDto })
   @ApiResponse({
     status: 200,
     description: 'Staff updated successfully',
+    type: StaffResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -106,6 +131,8 @@ export class StaffController {
   // REMOVE STAFF (Soft Delete)
   // ────────────────────────────────────────────────
   @Delete(':id')
+  @UseGuards(PermissionsGuard)
+  @Permission(PERMISSIONS.STAFF_DELETE)
   @ApiOperation({ summary: 'Deactivate staff user (soft delete)' })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiResponse({

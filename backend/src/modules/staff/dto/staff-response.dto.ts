@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { StaffRole, StaffUser } from '@prisma/client';
+import { StaffRole } from '@prisma/client';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 export class StaffResponseDto {
@@ -20,8 +20,11 @@ export class StaffResponseDto {
 
   @ApiProperty()
   createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
 }
 
 export type PaginatedStaffResponse = InstanceType<
-  ReturnType<typeof PaginatedResponseDto<StaffUser>>
+  ReturnType<typeof PaginatedResponseDto<StaffResponseDto>>
 >;

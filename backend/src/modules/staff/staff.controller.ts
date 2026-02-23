@@ -13,8 +13,10 @@ import { ApiTags, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { StaffService } from './staff.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { StaffUser } from '@prisma/client';
-import { PaginatedStaffResponse } from './dto/staff-response.dto';
+import {
+  PaginatedStaffResponse,
+  StaffResponseDto,
+} from './dto/staff-response.dto';
 import { QueryOptionsDto } from 'src/common/dto/query-options.dto';
 
 @ApiTags('Staff')
@@ -35,7 +37,7 @@ export class StaffController {
     status: 409,
     description: 'Staff with same email already exists',
   })
-  async create(@Body() dto: CreateStaffDto): Promise<StaffUser> {
+  async create(@Body() dto: CreateStaffDto): Promise<StaffResponseDto> {
     return this.staffService.create(dto);
   }
 
@@ -68,7 +70,9 @@ export class StaffController {
     status: 404,
     description: 'Staff not found',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<StaffUser> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<StaffResponseDto> {
     return this.staffService.findOne(id);
   }
 
@@ -93,7 +97,7 @@ export class StaffController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateStaffDto,
-  ): Promise<StaffUser> {
+  ): Promise<StaffResponseDto> {
     // For now, actingUserId is passed as id itself (temporary until auth is added)
     return this.staffService.update(id, dto, id);
   }
@@ -112,7 +116,9 @@ export class StaffController {
     status: 409,
     description: 'Cannot deactivate last active admin',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<StaffUser> {
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<StaffResponseDto> {
     // Temporary actingUserId = id (replace after auth)
     return this.staffService.remove(id, id);
   }

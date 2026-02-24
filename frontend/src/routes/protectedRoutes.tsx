@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/use-auth";
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { data: user, isLoading, isError } = useAuth();
-  console.log("ProtectedRoute - User:", user.role);
    if (isLoading) {
     return <div>Checking authentication...</div>;
   }
@@ -12,7 +11,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-    if (allowedRole && user.role.toLowerCase() !== allowedRole.toLowerCase()) {
+    if (allowedRole && user.role !== allowedRole) {
     return <Navigate to={`/${user.role}`} replace />;
   }
 

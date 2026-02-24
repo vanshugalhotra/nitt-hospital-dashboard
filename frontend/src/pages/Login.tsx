@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import medicalIllustration from "@/assets/medical-illustration.png";
+import { set } from "date-fns";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ const Login = () => {
         description: `Welcome back to the ${role} portal.`,
       });
       navigate(`/${role}`);
+      setLoading(false);
     } catch (error) {
        toast({
       variant: "destructive",
@@ -82,6 +84,8 @@ const Login = () => {
           ? error.message
           : "Something went wrong",
     });
+    }finally{
+      setLoading(false);
     }
     return;
   };

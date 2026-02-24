@@ -64,19 +64,29 @@ const App = () => (
 
           {/* Admin */}
           <Route path="/admin" element={
+            <ProtectedRoute allowedRole="admin">
            <AdminDashboard />
+          </ProtectedRoute>
           } />
           <Route path="/admin/doctors" element={
+            <ProtectedRoute allowedRole="admin">
            <ManageDoctors />
+          </ProtectedRoute>
           } />
           <Route path="/admin/pharmacy-staff" element={
+            <ProtectedRoute allowedRole="admin">
           <ManagePharmacyStaff />
+          </ProtectedRoute>
           } />
           <Route path="/admin/lab-staff" element={
-            <ManageLabStaff />
+            <ProtectedRoute allowedRole="admin">
+              <ManageLabStaff />
+            </ProtectedRoute> 
           } />
           <Route path="/admin/master-data" element={
+            <ProtectedRoute allowedRole="admin">  
             <MasterData />
+          </ProtectedRoute>
           } />
 
           {/* Doctor */}

@@ -1,28 +1,47 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Loader2, Users, Stethoscope, Pill, FlaskConical, UserRoundCog } from "lucide-react";
-import { useToast } from "@/hooks/use-toast"; 
-import axiosInstance from "@/lib/axios";
+import {
+  Loader2,
+  Users,
+  Stethoscope,
+  Pill,
+  FlaskConical,
+  UserRoundCog,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRoutes } from "@/lib/apiRoutes";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import medicalIllustration from "@/assets/medical-illustration.png";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loginId, setLoginId] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState("student");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    if (!loginId || !password) {
+      toast({
+        variant: "destructive",
+        title: "Missing Credentials",
+        description: "Please enter both login ID and password.",
+      });
+      return;
+    }
+
     if (role === "student") {
       const studentEmailRegex = /^\d+@nitt\.edu$/;
       if (!studentEmailRegex.test(loginId)) {
         toast({
           variant: "destructive",
           title: "Invalid Roll Number",
-          description: "Student email must start with your <roll-number>@nitt.edu",
+          description:
+            "Student email must start with your <roll-number>@nitt.edu",
         });
         return;
       }
@@ -37,16 +56,34 @@ const Login = () => {
       });
       return;
     }
+    try {
+      setLoading(true);
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+      const response = await fetchWithAuth(apiRoutes.staffAuth.login, {
+        method: "POST",
+        body: JSON.stringify({
+          email: loginId,
+          password: password,
+        }),
+      });
+      console.log("Login response:", response);
+      console.log("Role:", role);
       toast({
         title: "Login Successful",
         description: `Welcome back to the ${role} portal.`,
       });
-      navigate(`/${role}`); 
-    }, 1500);
+      navigate(`/${role}`);
+    } catch (error) {
+       toast({
+      variant: "destructive",
+      title: "Login Failed",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong",
+    });
+    }
+    return;
   };
 
   const roles = [
@@ -68,20 +105,24 @@ const Login = () => {
             type="button"
             onClick={() => {
               setRole(item.id);
-              setLoginId(""); 
+              setLoginId("");
             }}
             className="flex flex-col items-center group transition-all"
           >
-            <div className={`w-14 h-14 rounded-[1.25rem] flex items-center justify-center mb-2 transition-all border ${
-              role === item.id
-                ? "bg-primary text-primary-foreground border-primary shadow-md"
-                : "bg-card text-muted-foreground border-border group-hover:border-primary/50"
-            }`}>
+            <div
+              className={`w-14 h-14 rounded-[1.25rem] flex items-center justify-center mb-2 transition-all border ${
+                role === item.id
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-card text-muted-foreground border-border group-hover:border-primary/50"
+              }`}
+            >
               <Icon size={24} />
             </div>
-            <span className={`text-[10px] uppercase tracking-wider font-bold ${
-              role === item.id ? "text-primary" : "text-muted-foreground"
-            }`}>
+            <span
+              className={`text-[10px] uppercase tracking-wider font-bold ${
+                role === item.id ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
               {item.label}
             </span>
           </button>
@@ -95,12 +136,17 @@ const Login = () => {
       {/* Left - Illustration & Role Selection (Desktop) */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary/5 items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={medicalIllustration} alt="Medical" className="w-80 h-80 mx-auto mb-8 object-contain" />
+          <img
+            src={medicalIllustration}
+            alt="Medical"
+            className="w-80 h-80 mx-auto mb-8 object-contain"
+          />
           <h2 className="text-2xl font-bold font-display text-foreground mb-3">
             NIT Trichy Hospital
           </h2>
           <p className="text-muted-foreground mb-8">
-            Access your medical records, prescriptions, and lab reports securely.
+            Access your medical records, prescriptions, and lab reports
+            securely.
           </p>
           <RoleButtons />
         </div>
@@ -108,69 +154,94 @@ const Login = () => {
 
       {/* Form Section */}
       <div className="flex-1 flex flex-col items-center justify-center p-6">
-        
         {/* Mobile-only Header and Role Selector */}
         <div className="lg:hidden w-full max-w-md mb-8 text-center">
           <h2 className="text-2xl font-bold font-display text-foreground mb-6">
             NIT Trichy Hospital
           </h2>
           <p className="text-muted-foreground mb-8">
-            Access your medical records, prescriptions, and lab reports securely.
+            Access your medical records, prescriptions, and lab reports
+            securely.
           </p>
           <RoleButtons />
         </div>
 
         <div className="w-full max-w-md">
           <div className="bg-card rounded-2xl border border-border p-8 shadow-sm">
-            
             <h1 className="text-2xl font-bold font-display text-foreground mb-2 capitalize">
               {role} Login
             </h1>
-            <p className="text-muted-foreground text-sm mb-6">Sign in to your {role} portal</p>
+            <p className="text-muted-foreground text-sm mb-6">
+              Sign in to your {role} portal
+            </p>
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              
               {/* Role-specific Email Inputs */}
               <div>
                 <label className="text-sm font-light px-2 text-foreground block mb-1.5">
-                  {role === "student" ? "NITT Email" : 
-                   role === "doctor" ? "Doctor Email" :
-                   role === "pharmacy" ? "Staff Email" :
-                   role === "lab" ? "Lab Tech Email" : "Admin Email"}
+                  {role === "student"
+                    ? "NITT Email"
+                    : role === "doctor"
+                      ? "Doctor Email"
+                      : role === "pharmacy"
+                        ? "Staff Email"
+                        : role === "lab"
+                          ? "Lab Tech Email"
+                          : "Admin Email"}
                 </label>
                 <input
                   type="email"
                   required
                   value={loginId}
                   onChange={(e) => setLoginId(e.target.value)}
-                  placeholder={role === "student" ? "1101xxx@nitt.edu" : `${role}@nitt.edu`}
+                  placeholder={
+                    role === "student" ? "1101xxx@nitt.edu" : `${role}@nitt.edu`
+                  }
                   className="search-input w-full"
                 />
               </div>
 
               {/* Password */}
               <div>
-                <label className="text-sm font-light px-2 text-foreground block mb-1.5">Password</label>
+                <label className="text-sm font-light px-2 text-foreground block mb-1.5">
+                  Password
+                </label>
                 <input
                   type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   className="search-input w-full"
                 />
-                <Link to="/forgot-password" className="text-xs font-medium px-2 text-primary hover:underline block mb-1.5">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium px-2 text-primary hover:underline block mb-1.5"
+                >
                   Forgot Password?
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={!loginId || loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!loginId || !password || loading}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
 
             {role === "student" && (
               <p className="text-center text-sm text-muted-foreground mt-6">
                 New student?{" "}
-                <Link to="/register" className="text-primary font-medium hover:underline">
+                <Link
+                  to="/register"
+                  className="text-primary font-medium hover:underline"
+                >
                   Register now
                 </Link>
               </p>

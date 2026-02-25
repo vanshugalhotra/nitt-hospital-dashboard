@@ -7,9 +7,17 @@ import { LoggerModule } from './logger/logger.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { AdminSeedService } from './prisma/seed/admin.seed';
 import { AuthModule } from './modules/auth/auth.module';
+import { PatientModule } from './modules/patient/patient.module';
 
 @Module({
-  imports: [ConfigModule, PrismaModule, LoggerModule, StaffModule, AuthModule],
+  imports: [
+    ConfigModule,
+    PrismaModule,
+    LoggerModule,
+    StaffModule,
+    AuthModule,
+    PatientModule,
+  ],
   controllers: [AppController],
   providers: [AppService, AdminSeedService],
 })

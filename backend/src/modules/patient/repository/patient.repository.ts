@@ -64,12 +64,14 @@ export class PatientRepository {
   ): Promise<Patient | null> {
     return this.prisma.patient.findFirst({
       where: {
-        identifier,
+        identifier: {
+          equals: identifier,
+          mode: 'insensitive',
+        },
         ...(excludeId && { NOT: { id: excludeId } }),
       },
     });
   }
-
   // ────────────────────────────────────────────────
   // PAGINATED FIND
   // ────────────────────────────────────────────────

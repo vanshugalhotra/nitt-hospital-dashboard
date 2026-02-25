@@ -1,5 +1,6 @@
 # backend
 
 - maintain audit logs
-- soft deleted staff, should be allowed to add again
-- only return isAcive: true from staff & patient GET
+- soft deleted staff, should be allowed to add again 
+- only return isAcive: true from staff & patient GET ✅
+- hash & then store OTPs

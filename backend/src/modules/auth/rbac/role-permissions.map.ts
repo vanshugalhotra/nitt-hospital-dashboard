@@ -9,6 +9,9 @@ export const PERMISSIONS = {
   PATIENT_READ: 'patient.read',
   PATIENT_UPDATE: 'patient.update',
   PATIENT_DELETE: 'patient.delete',
+
+  // extras
+  OTP_MANAGE: 'otp.manage',
 } as const;
 
 export type AppPermission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

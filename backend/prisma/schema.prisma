@@ -279,9 +279,15 @@ model AuditLog {
 model EmailOTP {
   id        String   @id @default(uuid())
   email     String
-  otpCode   String
+  otpCode   String   // store HASHED value
   expiresAt DateTime
   used      Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([email, used])
+  @@index([expiresAt])
 }
 
 //

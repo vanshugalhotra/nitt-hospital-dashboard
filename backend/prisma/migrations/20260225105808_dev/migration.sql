@@ -182,6 +182,8 @@ CREATE TABLE "EmailOTP" (
     "otpCode" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "used" BOOLEAN NOT NULL DEFAULT false,
+    "attempts" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "EmailOTP_pkey" PRIMARY KEY ("id")
 );
@@ -220,6 +222,15 @@ CREATE UNIQUE INDEX "LabReport_prescriptionLabTestId_key" ON "LabReport"("prescr
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MedicineStock_medicineId_key" ON "MedicineStock"("medicineId");
+
+-- CreateIndex
+CREATE INDEX "EmailOTP_email_idx" ON "EmailOTP"("email");
+
+-- CreateIndex
+CREATE INDEX "EmailOTP_email_used_idx" ON "EmailOTP"("email", "used");
+
+-- CreateIndex
+CREATE INDEX "EmailOTP_expiresAt_idx" ON "EmailOTP"("expiresAt");
 
 -- AddForeignKey
 ALTER TABLE "DoctorProfile" ADD CONSTRAINT "DoctorProfile_staffUserId_fkey" FOREIGN KEY ("staffUserId") REFERENCES "StaffUser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -26,6 +26,9 @@ export interface AppConfig {
   SUPER_ADMIN_EMAIL: string;
   SUPER_ADMIN_PASSWORD: string;
   SUPER_ADMIN_NAME: string;
+
+  OTP_EXPIRY_MINUTES: number;
+  OTP_MAX_ATTEMPTS: number;
 }
 
 @Injectable()
@@ -68,6 +71,8 @@ export class ConfigService {
       SUPER_ADMIN_EMAIL: Joi.string().email().required(),
       SUPER_ADMIN_NAME: Joi.string().required(),
       SUPER_ADMIN_PASSWORD: Joi.string().min(8).required(),
+      OTP_EXPIRY_MINUTES: Joi.number().default(5),
+      OTP_MAX_ATTEMPTS: Joi.number().default(5),
     }).unknown(true);
 
     const validationResult = schema.validate(process.env, {

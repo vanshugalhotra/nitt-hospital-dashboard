@@ -8,6 +8,7 @@ import { StaffModule } from './modules/staff/staff.module';
 import { AdminSeedService } from './prisma/seed/admin.seed';
 import { AuthModule } from './modules/auth/auth.module';
 import { PatientModule } from './modules/patient/patient.module';
+import { OtpModule } from './otp/otp.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PatientModule } from './modules/patient/patient.module';
     StaffModule,
     AuthModule,
     PatientModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService, AdminSeedService],

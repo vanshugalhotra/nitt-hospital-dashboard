@@ -4,13 +4,19 @@ import { ConfigService } from 'src/config/config.service';
 export interface AuthJwtPayload {
   sub: string;
   email: string;
-  role: string;
+  type: 'staff' | 'patient';
+  role?: string;
 }
 
 export const generateAccessToken = (
   jwtService: JwtService,
   config: ConfigService,
-  user: { id: string; email: string; role: string },
+  user: {
+    id: string;
+    email: string;
+    type: 'staff' | 'patient';
+    role?: string; // only for staff
+  },
 ): string => {
   const secret = config.get('JWT_ACCESS_SECRET');
   const expiresIn = config.get('JWT_ACCESS_EXPIRES_IN') ?? '1d';
@@ -22,7 +28,8 @@ export const generateAccessToken = (
   const payload: AuthJwtPayload = {
     sub: user.id,
     email: user.email,
-    role: user.role,
+    type: user.type,
+    role: user.role, // undefined for patients
   };
 
   return jwtService.sign(payload, {

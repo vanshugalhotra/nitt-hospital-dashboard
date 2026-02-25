@@ -12,14 +12,14 @@ interface Cookies {
 export interface AuthenticatedUser {
   id: string;
   email: string;
-  role: string;
+  type: 'staff' | 'patient';
+  role?: string; // only defined for staff
 }
 
 const cookieExtractor = (config: ConfigService) => {
   return (req: Request): string | null => {
     if (req?.cookies) {
       const cookieName = config.get('AUTH_COOKIE_NAME') || 'access_token';
-      // Cast cookies to the defined type
       const cookies = req.cookies as Cookies;
       return cookies[cookieName] || null;
     }
@@ -41,7 +41,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-access') {
     return {
       id: payload.sub,
       email: payload.email,
-      role: payload.role,
+      type: payload.type,
+      role: payload.role, // undefined for patient
     };
   }
 }

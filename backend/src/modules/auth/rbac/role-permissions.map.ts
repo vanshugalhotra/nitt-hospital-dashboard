@@ -20,8 +20,8 @@ export const ROLE_PERMISSIONS: Record<
   readonly AppPermission[] | readonly ['*']
 > = {
   [StaffRole.ADMIN]: ['*'],
-  [StaffRole.DOCTOR]: [],
-  [StaffRole.PHARMACY]: [],
-  [StaffRole.LAB]: [],
-  [StaffRole.HOSPITAL_ADMIN]: [],
+  [StaffRole.DOCTOR]: [PERMISSIONS.PATIENT_READ],
+  [StaffRole.PHARMACY]: [PERMISSIONS.PATIENT_READ],
+  [StaffRole.LAB]: [PERMISSIONS.PATIENT_READ],
+  [StaffRole.HOSPITAL_ADMIN]: [PERMISSIONS.PATIENT_READ],
 };

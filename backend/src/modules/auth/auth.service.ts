@@ -68,6 +68,7 @@ export class AuthService {
         {
           id: staff.id,
           email: staff.email,
+          type: 'staff',
           role: staff.role,
         },
       );

@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import StatCard from "@/components/StatCard";
-import { LayoutDashboard, Users, UserCog, Pill, FlaskConical, Stethoscope, FileText, Database } from "lucide-react";
+import { LayoutDashboard, Users, Pill, FlaskConical, Stethoscope, FileText, Database } from "lucide-react";
 
 const sidebarItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
@@ -11,7 +11,7 @@ const sidebarItems = [
 ];
 
 const AdminDashboard = () => (
-  <DashboardLayout sidebarItems={sidebarItems} role="Admin" roleBadgeClass="badge-admin" userName="Dr. Admin">
+  <DashboardLayout sidebarItems={sidebarItems}>
     <div className="space-y-6">
       <h1 className="page-header">Admin Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

@@ -1,23 +1,23 @@
 import { useCRUDController } from "@/hooks/use-crud-controller";
 import { apiRoutes } from "@/lib/apiRoutes";
 
-export interface PharmacyStaff {
+export interface Lab {
   id: string;
   name: string;
   email: string;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
-  role: "PHARMACY";
+  role: "LAB";
 }
 
-export const usePharmacy = () => {
-  const crud = useCRUDController<PharmacyStaff>({
+export const useLab = () => {
+  const crud = useCRUDController<Lab>({
     baseUrl: apiRoutes.staff.base,
-    queryKey: "pharmacyStaff",
+    queryKey: "labStaff",
     defaultQuery: {
       filters: {
-        role: "PHARMACY",
+        role: "LAB",
       },
     },
   });

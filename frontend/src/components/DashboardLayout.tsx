@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Menu, X, LogOut, ChevronLeft } from "lucide-react";
+import { apiRoutes } from "@/lib/apiRoutes";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export interface SidebarItem {
   label: string;
@@ -18,6 +20,8 @@ interface DashboardLayoutProps {
   userName: string;
   userAvatar?: string;
 }
+
+
 
 const DashboardLayout = ({
   children,
@@ -38,6 +42,28 @@ const DashboardLayout = ({
   const navigate = useNavigate();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+  try {
+    await fetchWithAuth(apiRoutes.staffAuth.logout, {
+      method: "POST",
+    });
+
+    toast({
+      title: "Logout Successful",
+      description: `You have been logged out of the ${role} portal.`,
+    });
+
+    navigate("/login");
+
+  } catch (error) {
+    toast({
+      variant: "destructive",
+      title: "Logout Failed",
+      description: "Something went wrong while logging out.",
+    });
+  }
+};
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -102,13 +128,7 @@ const DashboardLayout = ({
         {/* Logout Section - Fixed the sticking out issue */}
         <div className="p-2 border-t border-sidebar-border overflow-hidden">
           <button
-            onClick={() => {
-              navigate("/login");
-              toast({
-                  title: "Logout Successful",
-                  description: `You have been logged out of the ${role} portal.`,
-                });
-              }}
+            onClick={() => handleLogout()}
             className={cn(
               "flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-logout-foreground hover:bg-sidebar-logout-accent hover:text-sidebar-logout-accent-foreground transition-colors",
               !sidebarOpen && "lg:justify-center lg:px-0"

@@ -1,0 +1,4 @@
+# backend
+
+- maintain audit logs
+- soft deleted staff, should be allowed to add again

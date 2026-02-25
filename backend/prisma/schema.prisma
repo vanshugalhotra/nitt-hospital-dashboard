@@ -72,6 +72,7 @@ model Patient {
   department    String?
   address       String?
   profileImage  String?
+  isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   prescriptions Prescription[]

@@ -29,6 +29,11 @@ export interface AppConfig {
 
   OTP_EXPIRY_MINUTES: number;
   OTP_MAX_ATTEMPTS: number;
+
+  SMTP_HOST: string;
+  SMTP_PORT: number;
+  SMTP_USER: string;
+  SMTP_PASS: string;
 }
 
 @Injectable()
@@ -73,6 +78,11 @@ export class ConfigService {
       SUPER_ADMIN_PASSWORD: Joi.string().min(8).required(),
       OTP_EXPIRY_MINUTES: Joi.number().default(5),
       OTP_MAX_ATTEMPTS: Joi.number().default(5),
+
+      SMTP_HOST: Joi.string().required(),
+      SMTP_PORT: Joi.number().default(587),
+      SMTP_USER: Joi.string().required(),
+      SMTP_PASS: Joi.string().required(),
     }).unknown(true);
 
     const validationResult = schema.validate(process.env, {

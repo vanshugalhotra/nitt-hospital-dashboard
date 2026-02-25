@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./routes/protectedRoutes";
 
 // Student
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -48,7 +49,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
@@ -62,31 +63,107 @@ const App = () => (
           <Route path="/student/special-doctors" element={<SpecialDoctors />} />
 
           {/* Admin */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/doctors" element={<ManageDoctors />} />
-          <Route path="/admin/pharmacy-staff" element={<ManagePharmacyStaff />} />
-          <Route path="/admin/lab-staff" element={<ManageLabStaff />} />
-          <Route path="/admin/master-data" element={<MasterData />} />
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRole="admin">
+           <AdminDashboard />
+          </ProtectedRoute>
+          } />
+          <Route path="/admin/doctors" element={
+            <ProtectedRoute allowedRole="admin">
+           <ManageDoctors />
+          </ProtectedRoute>
+          } />
+          <Route path="/admin/pharmacy-staff" element={
+            <ProtectedRoute allowedRole="admin">
+          <ManagePharmacyStaff />
+          </ProtectedRoute>
+          } />
+          <Route path="/admin/lab-staff" element={
+            <ProtectedRoute allowedRole="admin">
+              <ManageLabStaff />
+            </ProtectedRoute> 
+          } />
+          <Route path="/admin/master-data" element={
+            <ProtectedRoute allowedRole="admin">  
+            <MasterData />
+          </ProtectedRoute>
+          } />
 
           {/* Doctor */}
-          <Route path="/doctor" element={<DoctorDashboard />} />
-          <Route path="/doctor/profile" element={<DoctorProfile />} />
-          <Route path="/doctor/search-patient" element={<SearchPatient />} />
-          <Route path="/doctor/new-prescription" element={<NewPrescription />} />
-          <Route path="/doctor/past-prescriptions" element={<PastPrescriptions />} />
+          <Route path="/doctor" element={
+            <ProtectedRoute allowedRole="doctor">
+              <DoctorDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/doctor/profile" element={
+            <ProtectedRoute allowedRole="doctor">
+              <DoctorProfile />
+            </ProtectedRoute>
+          } />
+          <Route path="/doctor/search-patient" element={
+            <ProtectedRoute allowedRole="doctor">
+              <SearchPatient />
+            </ProtectedRoute>
+          } />
+          <Route path="/doctor/new-prescription" element={
+            <ProtectedRoute allowedRole="doctor">
+              <NewPrescription />
+            </ProtectedRoute>
+          } />
+          <Route path="/doctor/past-prescriptions" element={
+            <ProtectedRoute allowedRole="doctor">
+              <PastPrescriptions />
+            </ProtectedRoute>
+          } />
 
           {/* Pharmacy */}
-          <Route path="/pharmacy" element={<PharmacyDashboard />} />
-          <Route path="/pharmacy/stock" element={<PharmacyStock />} />
-          <Route path="/pharmacy/upload-stock" element={<UploadStock />} />
-          <Route path="/pharmacy/active-prescriptions" element={<ActivePrescriptions />} />
-          <Route path="/pharmacy/dispensed-history" element={<DispensedHistory />} />
+          <Route path="/pharmacy" element={
+            <ProtectedRoute allowedRole="pharmacy">
+              <PharmacyDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/pharmacy/stock" element={
+            <ProtectedRoute allowedRole="pharmacy">
+              <PharmacyStock />
+            </ProtectedRoute>
+          } />
+          <Route path="/pharmacy/upload-stock" element={
+            <ProtectedRoute allowedRole="pharmacy">
+              <UploadStock />
+            </ProtectedRoute>
+          } />
+          <Route path="/pharmacy/active-prescriptions" element={
+            <ProtectedRoute allowedRole="pharmacy">
+              <ActivePrescriptions />
+            </ProtectedRoute>
+          } />
+          <Route path="/pharmacy/dispensed-history" element={
+            <ProtectedRoute allowedRole="pharmacy">
+              <DispensedHistory />
+            </ProtectedRoute>
+          } />
 
           {/* Lab */}
-          <Route path="/lab" element={<LabDashboard />} />
-          <Route path="/lab/pending-tests" element={<PendingTests />} />
-          <Route path="/lab/completed-tests" element={<CompletedTests />} />
-          <Route path="/lab/upload-report" element={<UploadReport />} />
+          <Route path="/lab" element={
+            <ProtectedRoute allowedRole="lab">
+              <LabDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/lab/pending-tests" element={
+            <ProtectedRoute allowedRole="lab">
+              <PendingTests />
+            </ProtectedRoute>
+          } />
+          <Route path="/lab/completed-tests" element={
+            <ProtectedRoute allowedRole="lab">
+              <CompletedTests />
+            </ProtectedRoute>
+          } />
+          <Route path="/lab/upload-report" element={
+            <ProtectedRoute allowedRole="lab">
+              <UploadReport />
+            </ProtectedRoute>
+          } />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

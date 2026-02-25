@@ -5,6 +5,9 @@ import DetailModal from "@/components/DetailModal";
 import { LayoutDashboard, Stethoscope, Pill, FlaskConical, Database, Plus, Edit, Trash2, Loader2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { apiRoutes } from "@/lib/apiRoutes";
+import { useCRUDController } from "@/hooks/use-crud-controller";
+import { set } from "date-fns";
 
 const sidebarItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
@@ -14,15 +17,19 @@ const sidebarItems = [
   { label: "Master Data", icon: Database, path: "/admin/master-data" },
 ];
 
-// Mock data restored
-const initialDoctors = [
-  { id: 1, name: "Dr. Sharma", email: "sharma@hc.edu", qualification: "MD Medicine", experience: "10 years", specialization: "General Practitioner", initials: "DS" },
-  { id: 2, name: "Dr. Patel", email: "patel@hc.edu", qualification: "MD Pediatrics", experience: "8 years", specialization: "Pediatrics", initials: "DP" },
-  { id: 3, name: "Dr. Singh", email: "singh@hc.edu", qualification: "MBBS, DNB", experience: "5 years", specialization: "General Practitioner", initials: "RS" },
-];
-
 const specializations = ["General Practitioner", "Pediatrics", "Dermatology", "Orthopedics", "Cardiology", "Psychiatry", "Other"];
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Define the interface based on your backend schema
+interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  role: "ADMIN" | "HOSPITAL_ADMIN" | "DOCTOR" | "PHARMACY" | "LAB";
+}
 
 const ManageDoctors = () => {
   const { toast } = useToast();
@@ -30,15 +37,54 @@ const ManageDoctors = () => {
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [doctorToDelete, setDoctorToDelete] = useState<StaffMember | null>(null);
   
   const [form, setForm] = useState({
     name: "", email: "", qualification: "", experience: "", specialization: "", otherSpecialization: "", startTime: "", endTime: ""
+  });
+
+  const { 
+    data: staffMembers, 
+    isLoading: isFetching,
+    setSearch,
+    create,
+    remove 
+  } = useCRUDController<StaffMember>({
+    baseUrl: apiRoutes.staff.base, 
+    queryKey: "staff-list",
+    defaultQuery: {
+      filters: {
+        role: "DOCTOR"
+      }
+    }
   });
 
   const handleChange = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
+
+  const openDeleteConfirmation = (row: StaffMember) => {
+    setDoctorToDelete(row);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!doctorToDelete) return;
+
+    setLoading(true);
+    try {
+      await remove(doctorToDelete.id);
+      toast({ title: "Doctor Removed", description: "Record deleted successfully." });
+      setIsDeleteModalOpen(false);
+      setDoctorToDelete(null);
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -54,14 +100,9 @@ const ManageDoctors = () => {
     );
   };
 
-  // --- Strict Enforcement Logic ---
   const isFilled = () => {
     const basicInfo = form.name && form.email && form.qualification && form.experience && form.specialization;
-    
-    // If Specialization is "Other", check if otherSpecialization is typed
     const otherCheck = form.specialization === "Other" ? !!form.otherSpecialization : true;
-    
-    // If NOT General Practitioner, check timings and days
     const scheduleCheck = form.specialization !== "General Practitioner" && form.specialization !== "" 
       ? (!!form.startTime && !!form.endTime && selectedDays.length > 0)
       : true;
@@ -69,24 +110,45 @@ const ManageDoctors = () => {
     return basicInfo && otherCheck && scheduleCheck;
   };
 
-  const handleAddDoctor = () => {
+  const handleAddDoctor = async () => {
+    // 1. Keep Frontend Validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    
     if (!emailRegex.test(form.email)) {
       toast({ variant: "destructive", title: "Invalid Email", description: "Please enter a valid email address." });
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setShowModal(false);
-      toast({ title: "Doctor Added", description: `${form.name} has been successfully registered.` });
-      // Reset
-      setForm({ name: "", email: "", qualification: "", experience: "", specialization: "", otherSpecialization: "", startTime: "", endTime: "" });
-      setProfileImage(null);
-      setSelectedDays([]);
-    }, 1500);
+
+    try {
+        // 2. Call the CRUD Controller's create method
+        await create({
+          name: form.name,
+          email: form.email,
+          role: "DOCTOR", 
+          password: "password123", 
+          isActive: true
+        } as any);
+
+        // 3. Success UI Logic
+        toast({ title: "Doctor Added", description: `${form.name} has been successfully registered.` });
+        setShowModal(false);
+        
+        // Reset Form
+        setForm({ name: "", email: "", qualification: "", experience: "", specialization: "", otherSpecialization: "", startTime: "", endTime: "" });
+        setProfileImage(null);
+        setSelectedDays([]);
+
+    } catch (error: any) {
+        // 4. Handle Backend Errors (e.g., 401, 400, Duplicate Email)
+        toast({ 
+          variant: "destructive", 
+          title: "Error", 
+          description: error.message || "Failed to create doctor" 
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -99,32 +161,76 @@ const ManageDoctors = () => {
 
         <DataTable
           columns={[
-            { header: "Photo", accessor: (row) => (
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-bold text-primary">{row.initials}</span>
-              </div>
-            )},
+            { 
+              header: "Photo", 
+              accessor: (row: StaffMember) => (
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-sm font-bold text-primary">
+                    {row.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )
+            },
             { header: "Name", accessor: "name" },
             { header: "Email", accessor: "email" },
-            { header: "Qualification", accessor: "qualification" },
-            { header: "Experience", accessor: "experience" },
-            { header: "Specialization", accessor: "specialization" },
+            { header: "Role", accessor: "role" },
+            { 
+              header: "Status", 
+              accessor: (row: StaffMember) => (
+                <span className={row.isActive ? "text-green-600" : "text-red-600"}>
+                  {row.isActive ? "Active" : "Inactive"}
+                </span>
+              ) 
+            },
+            { 
+              header: "Joined", 
+              accessor: (row: StaffMember) => new Date(row.createdAt).toLocaleDateString('en-IN') 
+            },
           ]}
-          data={initialDoctors}
+          data={staffMembers}
           searchKey="name"
-          searchPlaceholder="Search doctors..."
-          actions={() => (
+          searchPlaceholder="Search staff..."
+          actions={(row: StaffMember) => (
             <div className="flex gap-1">
               <Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="ghost" onClick={() => openDeleteConfirmation(row)} size="sm" className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
             </div>
           )}
         />
 
+        <DetailModal
+            open={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            title="Confirm Deletion"
+          >
+            <div className="p-4 text-center">
+              <div className="mb-4 flex justify-center">
+                <div className="rounded-full bg-red-100 p-3">
+                  <Trash2 className="h-10 w-10 text-red-600" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-lg font-bold text-gray-900">Are you sure?</h3>
+              <p className="mb-6 text-sm text-gray-500">
+                You are about to delete <span className="font-semibold text-gray-700">{doctorToDelete?.name}</span>. 
+                This action is permanent and cannot be undone.
+              </p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  onClick={handleConfirmDelete}
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Yes, Delete Record"}
+                </Button>
+              </div>
+            </div>
+        </DetailModal>
         <DetailModal open={showModal} onClose={() => setShowModal(false)} title="Add New Doctor">
+          {/* ... keeping the same form UI from your original snippet ... */}
           <div className="space-y-5 py-2">
-            
-            {/* Photo Upload */}
             <div className="flex justify-center">
               <label className="cursor-pointer group">
                 <div className="h-24 w-24 rounded-full border-2 border-dashed border-border group-hover:border-primary transition-colors flex items-center justify-center overflow-hidden bg-muted">
@@ -178,7 +284,6 @@ const ManageDoctors = () => {
               </div>
             )}
 
-            {/* Availability Section - Seamless blending */}
             {form.specialization && form.specialization !== "General Practitioner" && (
               <>
                 <div className="grid grid-cols-2 gap-4 border-t pt-4">

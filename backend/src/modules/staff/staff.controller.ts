@@ -30,6 +30,8 @@ import { JwtAuthGuard } from '../auth/gaurds/jwt-auth.gaurd';
 import { PermissionsGuard } from '../auth/gaurds/permission.gaurd';
 import { Permission } from '../auth/decorators/permission.decorator';
 import { PERMISSIONS } from '../auth/rbac/role-permissions.map';
+import { AuthenticatedUser } from '../auth/strategies/access-token.strategy';
+import { CurrentUser } from 'src/common/decorators';
 
 @ApiTags('Staff')
 @UseGuards(JwtAuthGuard)
@@ -37,6 +39,24 @@ import { PERMISSIONS } from '../auth/rbac/role-permissions.map';
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
 
+  // ────────────────────────────────────────────────
+  // GET CURRENT STAFF PROFILE
+  // ────────────────────────────────────────────────
+  @Get('me')
+  @ApiOperation({ summary: 'Get current logged-in staff profile' })
+  @ApiResponse({
+    status: 200,
+    type: StaffResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async getMe(
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<StaffResponseDto> {
+    return this.staffService.findOne(user.id);
+  }
   // ────────────────────────────────────────────────
   // CREATE STAFF
   // ────────────────────────────────────────────────
@@ -122,9 +142,9 @@ export class StaffController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateStaffDto,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<StaffResponseDto> {
-    // For now, actingUserId is passed as id itself (temporary until auth is added)
-    return this.staffService.update(id, dto, id);
+    return this.staffService.update(id, dto, user.id);
   }
 
   // ────────────────────────────────────────────────
@@ -145,8 +165,8 @@ export class StaffController {
   })
   async remove(
     @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<StaffResponseDto> {
-    // Temporary actingUserId = id (replace after auth)
-    return this.staffService.remove(id, id);
+    return this.staffService.remove(id, user.id);
   }
 }

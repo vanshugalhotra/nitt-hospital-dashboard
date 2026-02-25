@@ -76,18 +76,16 @@ export class PatientValidationService {
     email?: string,
     identifier?: string,
   ): Promise<{ patient: Patient }> {
-    // Check existence
     const patient = await this.patientRepo.findById(id);
-    if (!patient) {
+
+    if (!patient || !patient.isActive) {
       throw new NotFoundException(`Patient with id "${id}" not found`);
     }
 
-    // Email uniqueness (if changed)
     if (email && email.toLowerCase() !== patient.email.toLowerCase()) {
       await this.validateEmailUnique(email, id);
     }
 
-    // Identifier uniqueness (if changed)
     if (identifier && identifier !== patient.identifier) {
       await this.validateIdentifierUnique(identifier, id);
     }
@@ -101,7 +99,7 @@ export class PatientValidationService {
   async validateExists(id: string): Promise<Patient> {
     const patient = await this.patientRepo.findById(id);
 
-    if (!patient) {
+    if (!patient || !patient.isActive) {
       throw new NotFoundException(`Patient with id "${id}" not found`);
     }
 

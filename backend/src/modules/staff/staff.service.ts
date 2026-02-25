@@ -77,8 +77,8 @@ export class StaffService {
 
       const staff = await this.staffRepo.findById(id);
 
-      if (!staff) {
-        this.logger.warn('Staff user not found', { id });
+      if (!staff || !staff.isActive) {
+        this.logger.warn('Staff user not found or inactive', { id });
         throw new NotFoundException(`Staff with id "${id}" not found`);
       }
 
@@ -97,7 +97,6 @@ export class StaffService {
       throw error;
     }
   }
-
   /* -------------------------------------------------------------------------- */
   /* FIND ALL */
   /* -------------------------------------------------------------------------- */
@@ -109,14 +108,22 @@ export class StaffService {
         ['name', 'email'],
       );
 
+      const where: Prisma.StaffUserWhereInput = {
+        ...queryArgs.where,
+      };
+
+      if (where.isActive === undefined) {
+        where.isActive = true;
+      }
+
       const [items, total] = await Promise.all([
         this.staffRepo.findMany({
-          where: queryArgs.where,
+          where,
           skip: queryArgs.skip,
           take: queryArgs.take,
           orderBy: queryArgs.orderBy,
         }),
-        this.staffRepo.count(queryArgs.where),
+        this.staffRepo.count(where),
       ]);
 
       this.logger.info('Staff users fetched successfully', {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { Prisma, Patient } from '@prisma/client';
 import { PatientRepository } from './repository/patient.repository';
 import { PatientValidationService } from './validation/patient-validation.service';
@@ -86,7 +90,7 @@ export class PatientService {
 
       const patient = await this.patientRepo.findById(id);
 
-      if (!patient) {
+      if (!patient || !patient.isActive) {
         this.logger.warn('Patient not found', { id });
         throw new NotFoundException(`Patient with id "${id}" not found`);
       }
@@ -120,14 +124,22 @@ export class PatientService {
         ['name', 'email', 'identifier'],
       );
 
+      const where: Prisma.PatientWhereInput = {
+        ...queryArgs.where,
+      };
+
+      if (where.isActive === undefined) {
+        where.isActive = true;
+      }
+
       const [items, total] = await Promise.all([
         this.patientRepo.findMany({
-          where: queryArgs.where,
+          where,
           skip: queryArgs.skip,
           take: queryArgs.take,
           orderBy: queryArgs.orderBy,
         }),
-        this.patientRepo.count(queryArgs.where),
+        this.patientRepo.count(where),
       ]);
 
       this.logger.info('Patients fetched successfully', {
@@ -163,7 +175,15 @@ export class PatientService {
     try {
       this.logger.info('Updating patient', { id });
 
-      await this.validation.validateUpdate(id, dto.email, dto.identifier);
+      const { patient } = await this.validation.validateUpdate(
+        id,
+        dto.email,
+        dto.identifier,
+      );
+
+      if (!patient.isActive) {
+        throw new NotFoundException(`Patient with id "${id}" not found`);
+      }
 
       const updateData: Prisma.PatientUpdateInput = {};
 
@@ -206,7 +226,13 @@ export class PatientService {
     try {
       this.logger.info('Soft deleting patient', { id });
 
-      await this.validation.validateExists(id);
+      const patient = await this.validation.validateExists(id);
+
+      if (!patient.isActive) {
+        throw new ConflictException(
+          `Patient with id "${id}" is already inactive`,
+        );
+      }
 
       const updated = await this.patientRepo.update(id, {
         isActive: false,

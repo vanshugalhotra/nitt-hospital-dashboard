@@ -104,6 +104,7 @@ export function useCRUDController<T extends { id?: string | number }>(
   // DELETE
   const deleteMutation = useMutation({
     mutationFn: async (id: string | number) => {
+      console.log(`Attempting to delete entity with ID: ${id}`);
       const res = await fetch(`${config.baseUrl}/${id}`, {
         method: "DELETE",
         credentials: "include",
@@ -111,7 +112,7 @@ export function useCRUDController<T extends { id?: string | number }>(
       if (!res.ok) throw new Error("Delete failed");
       return res.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [config.queryKey] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [config.queryKey,queryState] }),
   });
 
   return {

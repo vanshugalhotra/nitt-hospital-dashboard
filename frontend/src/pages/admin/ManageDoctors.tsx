@@ -16,9 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRoutes } from "@/lib/apiRoutes";
-import { useCRUDController } from "@/hooks/use-crud-controller";
-import { set } from "date-fns";
+
 import { useDoctors } from "@/hooks/useDoctors";
 
 const sidebarItems = [
@@ -164,6 +162,7 @@ const ManageDoctors = () => {
         name: form.name,
         email: form.email,
         password: "password123",
+        role: "DOCTOR",
         isActive: true,
       } as any);
 

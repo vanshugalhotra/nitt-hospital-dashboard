@@ -24,17 +24,7 @@ export const useDoctors = () => {
       },
     },
   });
-
-  // Optional: auto-attach role (so UI doesn’t pass it)
-  const createDoctor = async (data: Partial<Doctor>) => {
-    return crud.create({
-      ...data,
-      role: "DOCTOR",
-    });
-  };
-
   return {
     ...crud,
-    create: createDoctor,
   };
 };

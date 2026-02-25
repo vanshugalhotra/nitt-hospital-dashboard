@@ -4,7 +4,7 @@ import { Response } from 'express';
 
 import { StaffRepository } from '../staff/repository/staff.repository';
 import { StaffLoginDto } from './dto/staff-login.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { StaffAuthResponseDto } from './dto/auth-response.dto';
 
 import { verifyPassword } from 'src/common/utils/auth/password.util';
 import { generateAccessToken } from 'src/common/utils/auth/jwt.util';
@@ -14,8 +14,8 @@ import { ConfigService } from 'src/config/config.service';
 import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
-export class AuthService {
-  private readonly entity = 'Auth';
+export class AuthStaffService {
+  private readonly entity = 'AuthStaff';
 
   constructor(
     private readonly staffRepository: StaffRepository,
@@ -25,12 +25,12 @@ export class AuthService {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /* LOGIN */
+  /* STAFF LOGIN  */
   /* -------------------------------------------------------------------------- */
 
   async login(dto: StaffLoginDto): Promise<{
     accessToken: string;
-    user: AuthResponseDto;
+    user: StaffAuthResponseDto;
   }> {
     try {
       this.logger.info('Staff login attempt', {
@@ -100,7 +100,7 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /* LOGOUT */
+  /* STAFF LOGOUT  */
   /* -------------------------------------------------------------------------- */
 
   logout(res: Response): { message: string } {
@@ -122,10 +122,10 @@ export class AuthService {
   }
 
   /* -------------------------------------------------------------------------- */
-  /* GET CURRENT USER (ME) */
+  /* STAFF GET ME */
   /* -------------------------------------------------------------------------- */
 
-  async getMe(staffId: string): Promise<AuthResponseDto> {
+  async getMe(staffId: string): Promise<StaffAuthResponseDto> {
     try {
       this.logger.debug('Fetching authenticated staff user', { staffId });
 

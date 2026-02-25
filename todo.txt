@@ -4,3 +4,4 @@
 - soft deleted staff, should be allowed to add again 
 - only return isAcive: true from staff & patient GET ✅
 - hash & then store OTPs
+- refactor auth module with clean deps

@@ -8,19 +8,19 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
-import { AuthService } from './auth.service';
+import { AuthStaffService } from './auth-staff.service';
 import { StaffLoginDto } from './dto/staff-login.dto';
 import { JwtAuthGuard } from './gaurds/jwt-auth.gaurd';
 import { CurrentUser } from 'src/common/decorators';
 import { getAccessCookieOptions } from 'src/common/utils/auth/cookie.util';
 import { ConfigService } from 'src/config/config.service';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { StaffAuthResponseDto } from './dto/auth-response.dto';
 
 @ApiTags('Auth - Staff')
 @Controller({ path: 'auth/staff', version: '1' })
-export class AuthController {
+export class AuthStaffController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly authStaffService: AuthStaffService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -35,7 +35,7 @@ export class AuthController {
     status: 200,
     description:
       'Login successful. Returns staff user and sets HttpOnly cookie.',
-    type: AuthResponseDto,
+    type: StaffAuthResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -44,8 +44,8 @@ export class AuthController {
   async login(
     @Body() dto: StaffLoginDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<AuthResponseDto> {
-    const { accessToken, user } = await this.authService.login(dto);
+  ): Promise<StaffAuthResponseDto> {
+    const { accessToken, user } = await this.authStaffService.login(dto);
 
     res.cookie(
       this.configService.get('AUTH_COOKIE_NAME'),
@@ -67,7 +67,7 @@ export class AuthController {
     description: 'Logout successful. Auth cookie cleared.',
   })
   logout(@Res({ passthrough: true }) res: Response) {
-    return this.authService.logout(res);
+    return this.authStaffService.logout(res);
   }
 
   /* =========================================================
@@ -81,13 +81,13 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Current staff user returned successfully',
-    type: AuthResponseDto,
+    type: StaffAuthResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized (invalid or missing token)',
   })
-  async getMe(@CurrentUser('id') id: string): Promise<AuthResponseDto> {
-    return this.authService.getMe(id);
+  async getMe(@CurrentUser('id') id: string): Promise<StaffAuthResponseDto> {
+    return this.authStaffService.getMe(id);
   }
 }

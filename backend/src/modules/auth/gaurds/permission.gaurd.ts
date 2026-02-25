@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSION_KEY } from '../decorators/permission.decorator';
@@ -33,6 +34,10 @@ export class PermissionsGuard implements CanActivate {
 
     if (!user) {
       throw new ForbiddenException('User not found in request');
+    }
+
+    if (!user.role) {
+      throw new UnauthorizedException('Unauthorized');
     }
 
     const role = user.role as AppRole;

@@ -77,14 +77,13 @@ const Login = () => {
       setLoading(false);
     } catch (error) {
        toast({
-      variant: "destructive",
-      title: "Login Failed",
-      description:
-        error instanceof Error
-          ? error.message
-          : "Something went wrong",
-    });
-    }finally{
+        variant: "destructive",
+        title: "Login Failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong",
+      });
       setLoading(false);
     }
     return;

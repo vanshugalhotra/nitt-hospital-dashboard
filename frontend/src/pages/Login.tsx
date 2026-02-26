@@ -59,8 +59,9 @@ const Login = () => {
     }
     try {
       setLoading(true);
+      const URL= role === "student" ? apiRoutes.patientAuth.login : apiRoutes.staffAuth.login;
 
-      const response = await fetchWithAuth(apiRoutes.staffAuth.login, {
+      const response = await fetchWithAuth(URL, {
         method: "POST",
         body: JSON.stringify({
           email: loginId,

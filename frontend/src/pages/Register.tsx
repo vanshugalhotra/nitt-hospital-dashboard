@@ -21,11 +21,13 @@ const hostels = [
   "Opal F", "Pearl", "Ruby", "Sapphire", "Topaz", "Zircon A", "Zircon B", "Zircon C"
 ];
 
+const types = ["student", "faculty","other"];
+
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [form, setForm] = useState({
-    name: "", rollNumber: "", webmail: "", gender: "", department: "", hostel: "", roomNumber: "",
+    name: "", rollNumber: "", webmail: "", gender: "",department:"", userType: "", hostel: "", roomNumber: "",
   });
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
@@ -88,7 +90,7 @@ const Register = () => {
       toast({ variant: "destructive", title: "Name Error", description: "Please enter a valid name." });
       return;
     }
-    if (!form.gender || !form.department || !form.hostel || !form.roomNumber) {
+    if (!form.gender || !form.userType || !form.hostel || !form.roomNumber  || !form.department) {
       toast({ variant: "destructive", title: "Missing Fields", description: "Please fill in all details including Gender." });
       return;
     }
@@ -220,6 +222,13 @@ const Register = () => {
                   <select value={form.department} onChange={e => handleChange("department", e.target.value)} className="search-input w-full">
                     <option value="">Select</option>
                     {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+                 <div>
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">User Type</label>
+                  <select value={form.userType} onChange={e => handleChange("userType", e.target.value)} className="search-input w-full">
+                    <option value="">Select</option>
+                    {types.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>

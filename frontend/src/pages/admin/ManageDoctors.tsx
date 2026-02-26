@@ -75,6 +75,7 @@ const ManageDoctors = () => {
     otherSpecialization: "",
     startTime: "",
     endTime: "",
+    role: "DOCTOR" as const,
   });
 
   const { data: staffMembers, create, remove, update } = useDoctors();
@@ -93,6 +94,7 @@ const ManageDoctors = () => {
       otherSpecialization: "",
       startTime: "",
       endTime: "",
+      role: "DOCTOR",
     });
     setProfileImage(null);
     setSelectedDays([]);
@@ -114,6 +116,7 @@ const ManageDoctors = () => {
       otherSpecialization: doctor.otherSpecialization || "",
       startTime: doctor.startTime || "",
       endTime: doctor.endTime || "",
+      role: "DOCTOR",
     });
     setSelectedDays(doctor.availableDays || []);
     setShowModal(true);
@@ -197,10 +200,10 @@ const ManageDoctors = () => {
     setLoading(true);
     try {
       await create({
-        ...form,
-        availableDays: selectedDays,
-        password: "password123",
+        name: form.name,
+        email: form.email,
         role: "DOCTOR",
+        password: "password123",
         isActive: true,
       } as any);
 

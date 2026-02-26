@@ -159,7 +159,7 @@ const ManageLabStaff = () => {
   };
 
   return (
-    <DashboardLayout sidebarItems={sidebarItems} role="Admin" roleBadgeClass="badge-admin" userName="Dr. Admin">
+    <DashboardLayout sidebarItems={sidebarItems}>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="page-header">Lab Staff</h1>

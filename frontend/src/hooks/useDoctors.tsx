@@ -1,6 +1,3 @@
-// hooks/useDoctors.ts
-"use client";
-
 import { useCRUDController } from "@/hooks/use-crud-controller";
 import { apiRoutes } from "@/lib/apiRoutes";
 

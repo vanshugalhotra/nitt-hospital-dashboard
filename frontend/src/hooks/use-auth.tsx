@@ -12,6 +12,7 @@ export const useAuth = () => {
       }) as { data: AuthUser };
 
       const user = response.data;
+      console.log("Fetched user data:", user); // Debug log to check the fetched user data
 
       return {
         ...user,

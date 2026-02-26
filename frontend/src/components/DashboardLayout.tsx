@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Menu, X, LogOut, ChevronLeft } from "lucide-react";
 import { apiRoutes } from "@/lib/apiRoutes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { useCRUDController } from "@/hooks/use-crud-controller";
+import { useAuth } from "@/hooks/use-auth";
 
 export interface SidebarItem {
   label: string;
@@ -47,10 +47,7 @@ const DashboardLayout = ({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { data: user } = useCRUDController<AuthUser>({
-    baseUrl: apiRoutes.staffAuth.me,
-    queryKey: "currentUser",
-  });
+  const { data: user, isLoading } = useAuth();
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = async () => {

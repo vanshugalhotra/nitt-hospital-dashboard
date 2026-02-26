@@ -15,6 +15,10 @@ export const apiRoutes = {
     logout: `${API_URL}/auth/staff/logout`,
     me: `${API_URL}/auth/staff/me`,
   },
+  patientAuth: {
+    login: `${API_URL}/auth/patient/login`,
+    logout: `${API_URL}/auth/patient/logout`,
+  },
   export: {
     base: `${API_URL}/export`,
   },

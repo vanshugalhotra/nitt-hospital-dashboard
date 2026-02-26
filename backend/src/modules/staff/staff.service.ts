@@ -112,9 +112,9 @@ export class StaffService {
         ...queryArgs.where,
       };
 
-      if (where.isActive === undefined) {
-        where.isActive = true;
-      }
+      // if (where.isActive === undefined) {
+      //   where.isActive = true;
+      // }
 
       const [items, total] = await Promise.all([
         this.staffRepo.findMany({
